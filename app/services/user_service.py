@@ -2,38 +2,36 @@ import psycopg
 
 from app.repositories.user_repository import UserRepository
 
+
 class UserService:
+
     def __init__(self):
-        self.repository=UserRepository()
+        self.repository = UserRepository()
 
     def create_user(
-            self,
-            connection : psycopg.Connection,
-            username : str,
-            role : str
-    ) :
+        self,
+        connection: psycopg.Connection,
+        username: str,
+        role: str
+    ):
         return self.repository.create_user(
             connection,
             username,
             role
         )
 
-    def get_user(self,
-                    connection : psycopg.Connection,
-        user_id : int,
-        role : str,):
-        return self. repository,create_user(
+    def get_user(
+        self,
+        connection: psycopg.Connection,
+        user_id: int
+    ):
+        return self.repository.get_user(
             connection,
-            user_id,
-            role
+            user_id
         )
 
     def list_users(
-    self,
-    connection: psycopg.Connection,
-):
+        self,
+        connection: psycopg.Connection,
+    ):
         return self.repository.list_users(connection)
-    
-
-        
-        

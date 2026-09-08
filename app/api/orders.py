@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 import psycopg
-from app.schemas.order import OrderCreate,OrderResponse
+from app.schemas.order import OrderCreate,OrderResponse,ProcessedOrderResponse
 from app.services.order_service import OrderService
 from app.api.dependencies import get_db_connection
+from app.services.order_processing_service import OrderProcessingService
 
 router=APIRouter(prefix='/orders',tags=["Orders"])
 order_service=OrderService()
+order_processing_service=OrderProcessingService()
 
 
 @router.post("/",response_model=OrderResponse)
@@ -74,3 +76,42 @@ def list_orders(
         )
         for row in results
     ]    
+
+@router.post("/{order_id}/process")
+def process_order(
+    order_id:int, 
+    connection : psycopg.Connection=Depends(get_db_connection)
+):
+    result=order_processing_service.process_order(
+        connection, order_id
+    )
+
+    if result is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Order has already been processed",
+        )
+    return result
+
+@router.get("/{order_id}/processed", response_model=ProcessedOrderResponse)
+def get_processed_order(
+    order_id: int,
+    connection: psycopg.Connection = Depends(get_db_connection),
+):
+    result = order_processing_service.get_processed_order(
+        connection,
+        order_id,
+    )
+
+    if result is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Processed order not found",
+        )
+
+    return {
+        "processed_order_id": result[0],
+        "order_id": result[1],
+        "extracted_data": result[2],
+        "created_at": result[3],
+    }

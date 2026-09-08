@@ -35,11 +35,11 @@ def create_user(
 @router.get("/{user_id}", response_model=UserResponse)
 def get_user(
     user_id: int,
-    connection: psycopg.Connection = Depends(get_db_connection),
+    connection: psycopg.Connection = Depends(get_db_connection)
 ):
     result = user_service.get_user(
         connection,
-        user_id,
+        user_id
     )
 
     if result is None:

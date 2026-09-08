@@ -5,7 +5,7 @@ from app.utils.sql_loader import load_sql
 CREATE_ORDER_SQL= load_sql("orders/create_order.sql")
 GET_ORDER_SQL = load_sql("orders/get_order.sql")
 LIST_ORDERS_SQL = load_sql("orders/list_orders.sql")
-
+UPDATE_STATUS_SQL = load_sql("orders/update_status.sql")
 
 class OrderRepository:
 
@@ -44,3 +44,16 @@ class OrderRepository:
             cursor.execute(LIST_ORDERS_SQL)
 
             return cursor.fetchall()
+
+    def update_status(
+    self,
+    connection: psycopg.Connection,
+    order_id: int,
+    status: str,
+):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                UPDATE_STATUS_SQL,
+                (status, order_id),
+            )
+
